@@ -12,8 +12,8 @@ namespace SA.PTM.Entity.Concrete
         public int Id { get; set; }
         public int PersonelId { get; set; }
         public Personel Personel { get; set; }
-        public DateTime IzinBaslangicTarihi { get; set; }
-        public DateTime IzinBitisTarihi { get; set; }
-        public string IzinTuru { get; set; }
+        public DateTime? IzinBaslangicTarihi { get; set; }
+        public DateTime? IzinBitisTarihi { get; set; }
+        public string? IzinTuru { get; set; }
     }
 }

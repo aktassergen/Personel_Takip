@@ -12,11 +12,12 @@ namespace SA.PTM.Entity.Concrete
         public int Id { get; set; }
         public int PersonelId { get; set; }
         public Personel Personel { get; set; }
-        public string OkulAdi { get; set; }
-        public string MezuniyetDerecesi { get; set; }
-        public DateTime MezuniyetTarihi { get; set; }
-        public string? DiplomaninOrnegi { get; set; } // Diploma için byte dizisi
-        public string SertifikaAdi { get; set; }
-        public string SirketIciEgitim { get; set; }
+        public List<Okul> Okullar { get; set; }
+
+        // 1-N ilişki ile Sertifikalar
+        public List<Sertifika> Sertifikalar { get; set; }
+
+        // 1-N ilişki ile Şirket İçi Eğitimler
+        public List<SirketIciEgitim> SirketIciEgitimler { get; set; }
     }
 }

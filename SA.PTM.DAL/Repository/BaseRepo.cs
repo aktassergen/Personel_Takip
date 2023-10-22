@@ -27,6 +27,11 @@ namespace SA.PTM.DAL.Concrete
             _dbContext = new PersonelTakipDbContext();
             _dbSet = _dbContext.Set<T>();
         }
+
+        public BaseRepo()
+        {
+        }
+
         public void Insert(T entity)
         {
             _dbSet.Add(entity);
@@ -58,5 +63,9 @@ namespace SA.PTM.DAL.Concrete
             return _dbSet.SingleOrDefault(x => x.Id == id);
         }
 
+        public int UserLogin(string email, string password)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

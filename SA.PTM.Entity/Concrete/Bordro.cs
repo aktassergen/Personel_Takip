@@ -12,7 +12,7 @@ namespace SA.PTM.Entity.Concrete
         public int Id { get; set; }
         public int PersonelId { get; set; }
         public Personel Personel { get; set; }
-        public decimal MaasMiktar { get; set; }
-        public DateTime BordroTarihi { get; set; }
+        public decimal? MaasMiktar { get; set; }
+        public DateTime? BordroTarihi { get; set; }
     }
 }

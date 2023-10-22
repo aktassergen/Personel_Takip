@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace SA.PTM.BLL.Services
 {
-    public interface IPersonelService:IService<Personel>
+    public interface ISirketIciEgitimService : IService<SirketIciEgitim>
     {
-        public Personel PersonelGiris(string TC);
     }
 }

@@ -15,6 +15,12 @@ namespace SA.PTM.DAL.Concrete
         {
             _repository = repository;
         }
+        public Personel PersonelGiris(string TC)
+        {
+            // TC'ye göre ilgili personeli getir
+            return _repository.GetAll().FirstOrDefault(p => p.TcNo == TC);
+        }
+
     }
 }
 

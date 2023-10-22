@@ -12,11 +12,29 @@ namespace SA.PTM.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Yoneticiler",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    KullaniciMail = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    KullaniciSifre = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Yoneticiler", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Personeller",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    YoneticiId = table.Column<int>(type: "int", nullable: false),
+                    maasBilgisiId = table.Column<int>(type: "int", nullable: false),
+                    EgitimBilgisiId = table.Column<int>(type: "int", nullable: false),
+                    OzlukBilgisiId = table.Column<int>(type: "int", nullable: false),
                     TcNo = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Ad = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Soyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -33,6 +51,12 @@ namespace SA.PTM.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Personeller", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Personeller_Yoneticiler_YoneticiId",
+                        column: x => x.YoneticiId,
+                        principalTable: "Yoneticiler",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -42,9 +66,9 @@ namespace SA.PTM.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PersonelId = table.Column<int>(type: "int", nullable: false),
-                    AvansMiktar = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    VerilisTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OdemeVadesi = table.Column<int>(type: "int", nullable: false)
+                    AvansMiktar = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    VerilisTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    OdemeVadesi = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -64,8 +88,8 @@ namespace SA.PTM.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PersonelId = table.Column<int>(type: "int", nullable: false),
-                    MaasMiktar = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    BordroTarihi = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    MaasMiktar = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    BordroTarihi = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -84,13 +108,7 @@ namespace SA.PTM.DAL.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PersonelId = table.Column<int>(type: "int", nullable: false),
-                    OkulAdi = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MezuniyetDerecesi = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MezuniyetTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DiplomaninOrnegi = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SertifikaAdi = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SirketIciEgitim = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    PersonelId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -110,9 +128,9 @@ namespace SA.PTM.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PersonelId = table.Column<int>(type: "int", nullable: false),
-                    IzinBaslangicTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IzinBitisTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IzinTuru = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    IzinBaslangicTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IzinBitisTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IzinTuru = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -153,13 +171,13 @@ namespace SA.PTM.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PersonelId = table.Column<int>(type: "int", nullable: false),
-                    IkametAdresi = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IkametAdresi = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SaglikRaporu = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AdliSicilBelgesi = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Ehliyet = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Ehliyet = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Sozlesme = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CV = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsBasvurusu = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsBasvurusu = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AileCuzdani = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AskerlikBelgesi = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -170,6 +188,72 @@ namespace SA.PTM.DAL.Migrations
                         name: "FK_OzlukBilgileri_Personeller_PersonelId",
                         column: x => x.PersonelId,
                         principalTable: "Personeller",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Okullar",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OkulAdi = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MezuniyetDerecesi = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MezuniyetTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DiplomaOrnegi = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EgitimBilgisiId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Okullar", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Okullar_EgitimBilgileri_EgitimBilgisiId",
+                        column: x => x.EgitimBilgisiId,
+                        principalTable: "EgitimBilgileri",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sertifikalar",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SertifikaAdi = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AlinanKurum = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SertifikaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EgitimBilgisiId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sertifikalar", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sertifikalar_EgitimBilgileri_EgitimBilgisiId",
+                        column: x => x.EgitimBilgisiId,
+                        principalTable: "EgitimBilgileri",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SirketIciEgitimler",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EgitimAdi = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AlinmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EgitimBilgisiId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SirketIciEgitimler", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SirketIciEgitimler_EgitimBilgileri_EgitimBilgisiId",
+                        column: x => x.EgitimBilgisiId,
+                        principalTable: "EgitimBilgileri",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -187,7 +271,8 @@ namespace SA.PTM.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_EgitimBilgileri_PersonelId",
                 table: "EgitimBilgileri",
-                column: "PersonelId");
+                column: "PersonelId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_IzinBilgileri_PersonelId",
@@ -197,18 +282,40 @@ namespace SA.PTM.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_MaasBilgileri_PersonelId",
                 table: "MaasBilgileri",
-                column: "PersonelId");
+                column: "PersonelId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Okullar_EgitimBilgisiId",
+                table: "Okullar",
+                column: "EgitimBilgisiId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OzlukBilgileri_PersonelId",
                 table: "OzlukBilgileri",
-                column: "PersonelId");
+                column: "PersonelId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Personeller_TcNo",
                 table: "Personeller",
                 column: "TcNo",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Personeller_YoneticiId",
+                table: "Personeller",
+                column: "YoneticiId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sertifikalar_EgitimBilgisiId",
+                table: "Sertifikalar",
+                column: "EgitimBilgisiId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SirketIciEgitimler_EgitimBilgisiId",
+                table: "SirketIciEgitimler",
+                column: "EgitimBilgisiId");
         }
 
         /// <inheritdoc />
@@ -221,19 +328,31 @@ namespace SA.PTM.DAL.Migrations
                 name: "Bordrolar");
 
             migrationBuilder.DropTable(
-                name: "EgitimBilgileri");
-
-            migrationBuilder.DropTable(
                 name: "IzinBilgileri");
 
             migrationBuilder.DropTable(
                 name: "MaasBilgileri");
 
             migrationBuilder.DropTable(
+                name: "Okullar");
+
+            migrationBuilder.DropTable(
                 name: "OzlukBilgileri");
 
             migrationBuilder.DropTable(
+                name: "Sertifikalar");
+
+            migrationBuilder.DropTable(
+                name: "SirketIciEgitimler");
+
+            migrationBuilder.DropTable(
+                name: "EgitimBilgileri");
+
+            migrationBuilder.DropTable(
                 name: "Personeller");
+
+            migrationBuilder.DropTable(
+                name: "Yoneticiler");
         }
     }
 }

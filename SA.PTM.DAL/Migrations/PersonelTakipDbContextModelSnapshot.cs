@@ -30,16 +30,16 @@ namespace SA.PTM.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("AvansMiktar")
+                    b.Property<decimal?>("AvansMiktar")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("OdemeVadesi")
-                        .HasColumnType("int");
+                    b.Property<string>("OdemeVadesi")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PersonelId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("VerilisTarihi")
+                    b.Property<DateTime?>("VerilisTarihi")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -57,10 +57,10 @@ namespace SA.PTM.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("BordroTarihi")
+                    b.Property<DateTime?>("BordroTarihi")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("MaasMiktar")
+                    b.Property<decimal?>("MaasMiktar")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("PersonelId")
@@ -81,34 +81,13 @@ namespace SA.PTM.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DiplomaninOrnegi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MezuniyetDerecesi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("MezuniyetTarihi")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("OkulAdi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PersonelId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SertifikaAdi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SirketIciEgitim")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("PersonelId");
+                    b.HasIndex("PersonelId")
+                        .IsUnique();
 
                     b.ToTable("EgitimBilgileri");
                 });
@@ -121,14 +100,13 @@ namespace SA.PTM.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("IzinBaslangicTarihi")
+                    b.Property<DateTime?>("IzinBaslangicTarihi")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("IzinBitisTarihi")
+                    b.Property<DateTime?>("IzinBitisTarihi")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("IzinTuru")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PersonelId")
@@ -160,9 +138,43 @@ namespace SA.PTM.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PersonelId");
+                    b.HasIndex("PersonelId")
+                        .IsUnique();
 
                     b.ToTable("MaasBilgileri");
+                });
+
+            modelBuilder.Entity("SA.PTM.Entity.Concrete.Okul", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DiplomaOrnegi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EgitimBilgisiId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MezuniyetDerecesi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("MezuniyetTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OkulAdi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EgitimBilgisiId");
+
+                    b.ToTable("Okullar");
                 });
 
             modelBuilder.Entity("SA.PTM.Entity.Concrete.OzlukBilgisi", b =>
@@ -186,15 +198,12 @@ namespace SA.PTM.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Ehliyet")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IkametAdresi")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IsBasvurusu")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PersonelId")
@@ -208,7 +217,8 @@ namespace SA.PTM.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PersonelId");
+                    b.HasIndex("PersonelId")
+                        .IsUnique();
 
                     b.ToTable("OzlukBilgileri");
                 });
@@ -244,12 +254,18 @@ namespace SA.PTM.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EgitimBilgisiId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Fotograf")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MedeniDurumu")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OzlukBilgisiId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Rol")
                         .IsRequired()
@@ -267,12 +283,95 @@ namespace SA.PTM.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("YoneticiId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("maasBilgisiId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TcNo")
                         .IsUnique();
 
+                    b.HasIndex("YoneticiId");
+
                     b.ToTable("Personeller");
+                });
+
+            modelBuilder.Entity("SA.PTM.Entity.Concrete.Sertifika", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AlinanKurum")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EgitimBilgisiId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SertifikaAdi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SertifikaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EgitimBilgisiId");
+
+                    b.ToTable("Sertifikalar");
+                });
+
+            modelBuilder.Entity("SA.PTM.Entity.Concrete.SirketIciEgitim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AlinmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EgitimAdi")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EgitimBilgisiId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EgitimBilgisiId");
+
+                    b.ToTable("SirketIciEgitimler");
+                });
+
+            modelBuilder.Entity("SA.PTM.Entity.Concrete.Yonetici", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("KullaniciMail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("KullaniciSifre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Yoneticiler");
                 });
 
             modelBuilder.Entity("SA.PTM.Entity.Concrete.Avans", b =>
@@ -300,8 +399,8 @@ namespace SA.PTM.DAL.Migrations
             modelBuilder.Entity("SA.PTM.Entity.Concrete.EgitimBilgisi", b =>
                 {
                     b.HasOne("SA.PTM.Entity.Concrete.Personel", "Personel")
-                        .WithMany("EgitimBilgileri")
-                        .HasForeignKey("PersonelId")
+                        .WithOne("EgitimBilgisi")
+                        .HasForeignKey("SA.PTM.Entity.Concrete.EgitimBilgisi", "PersonelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -322,19 +421,30 @@ namespace SA.PTM.DAL.Migrations
             modelBuilder.Entity("SA.PTM.Entity.Concrete.MaasBilgisi", b =>
                 {
                     b.HasOne("SA.PTM.Entity.Concrete.Personel", "Personel")
-                        .WithMany("MaasBilgileri")
-                        .HasForeignKey("PersonelId")
+                        .WithOne("MaasBilgisi")
+                        .HasForeignKey("SA.PTM.Entity.Concrete.MaasBilgisi", "PersonelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Personel");
                 });
 
+            modelBuilder.Entity("SA.PTM.Entity.Concrete.Okul", b =>
+                {
+                    b.HasOne("SA.PTM.Entity.Concrete.EgitimBilgisi", "EgitimBilgisi")
+                        .WithMany("Okullar")
+                        .HasForeignKey("EgitimBilgisiId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EgitimBilgisi");
+                });
+
             modelBuilder.Entity("SA.PTM.Entity.Concrete.OzlukBilgisi", b =>
                 {
                     b.HasOne("SA.PTM.Entity.Concrete.Personel", "Personel")
-                        .WithMany("OzlukBilgileri")
-                        .HasForeignKey("PersonelId")
+                        .WithOne("OzlukBilgisi")
+                        .HasForeignKey("SA.PTM.Entity.Concrete.OzlukBilgisi", "PersonelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -343,17 +453,67 @@ namespace SA.PTM.DAL.Migrations
 
             modelBuilder.Entity("SA.PTM.Entity.Concrete.Personel", b =>
                 {
+                    b.HasOne("SA.PTM.Entity.Concrete.Yonetici", "Yonetici")
+                        .WithMany("Personeller")
+                        .HasForeignKey("YoneticiId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Yonetici");
+                });
+
+            modelBuilder.Entity("SA.PTM.Entity.Concrete.Sertifika", b =>
+                {
+                    b.HasOne("SA.PTM.Entity.Concrete.EgitimBilgisi", "EgitimBilgisi")
+                        .WithMany("Sertifikalar")
+                        .HasForeignKey("EgitimBilgisiId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EgitimBilgisi");
+                });
+
+            modelBuilder.Entity("SA.PTM.Entity.Concrete.SirketIciEgitim", b =>
+                {
+                    b.HasOne("SA.PTM.Entity.Concrete.EgitimBilgisi", "EgitimBilgisi")
+                        .WithMany("SirketIciEgitimler")
+                        .HasForeignKey("EgitimBilgisiId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EgitimBilgisi");
+                });
+
+            modelBuilder.Entity("SA.PTM.Entity.Concrete.EgitimBilgisi", b =>
+                {
+                    b.Navigation("Okullar");
+
+                    b.Navigation("Sertifikalar");
+
+                    b.Navigation("SirketIciEgitimler");
+                });
+
+            modelBuilder.Entity("SA.PTM.Entity.Concrete.Personel", b =>
+                {
                     b.Navigation("Avanslar");
 
                     b.Navigation("Bordrolar");
 
-                    b.Navigation("EgitimBilgileri");
+                    b.Navigation("EgitimBilgisi")
+                        .IsRequired();
 
                     b.Navigation("IzinBilgileri");
 
-                    b.Navigation("MaasBilgileri");
+                    b.Navigation("MaasBilgisi")
+                        .IsRequired();
 
-                    b.Navigation("OzlukBilgileri");
+                    b.Navigation("OzlukBilgisi")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SA.PTM.Entity.Concrete.Yonetici", b =>
+                {
+                    b.Navigation("Personeller");
                 });
 #pragma warning restore 612, 618
         }
