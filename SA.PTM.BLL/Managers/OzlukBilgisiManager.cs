@@ -15,5 +15,7 @@ namespace SA.PTM.DAL.Concrete
         {
             _repository = repository;
         }
+
+       
     }
 }

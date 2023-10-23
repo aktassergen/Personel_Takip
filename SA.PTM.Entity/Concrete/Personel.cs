@@ -18,6 +18,7 @@ namespace SA.PTM.Entity.Concrete
         public string Ad { get; set; }
         public string Soyad { get; set; }
         public DateTime DogumTarihi { get; set; }
+        public DateTime BaslangicTarihi { get; set; }  
         public string DogumYeri { get; set; }
         public string Anne { get; set; }
         public string Baba { get; set; }

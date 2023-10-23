@@ -153,11 +153,13 @@ namespace SA.PTM.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DiplomaOrnegi")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EgitimBilgisiId")
                         .HasColumnType("int");
+
+                    b.Property<string>("EgitimTipleri")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MezuniyetDerecesi")
                         .IsRequired()
@@ -242,6 +244,9 @@ namespace SA.PTM.DAL.Migrations
                     b.Property<string>("Baba")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("BaslangicTarihi")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Departman")
                         .IsRequired()

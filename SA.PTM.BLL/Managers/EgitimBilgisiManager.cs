@@ -15,5 +15,17 @@ namespace SA.PTM.DAL.Concrete
         {
             _repository = repository;
         }
+
+        public int EgitimIdId(int personelId)
+        {
+            var personel = _repository.GetAll().FirstOrDefault(p => p.PersonelId == personelId);
+            if (personel != null)
+            {
+                return personel.Id;
+            }
+            return -1;
+        }
+
+
     }
 }

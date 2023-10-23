@@ -15,10 +15,14 @@ namespace SA.PTM.DAL.Concrete
         {
             _repository = repository;
         }
-        public Personel PersonelGiris(string TC)
+        public int PersonelGiris(string TC)
         {
-            // TC'ye göre ilgili personeli getir
-            return _repository.GetAll().FirstOrDefault(p => p.TcNo == TC);
+            var personel = _repository.GetAll().FirstOrDefault(p => p.TcNo == TC);
+            if (personel != null)
+            {
+                return personel.Id;
+            }
+            return -1; 
         }
 
     }

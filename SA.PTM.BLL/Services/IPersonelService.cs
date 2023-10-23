@@ -9,6 +9,6 @@ namespace SA.PTM.BLL.Services
 {
     public interface IPersonelService:IService<Personel>
     {
-        public Personel PersonelGiris(string TC);
+        public int PersonelGiris(string TC);
     }
 }

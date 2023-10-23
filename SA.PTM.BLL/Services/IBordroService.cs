@@ -9,5 +9,6 @@ namespace SA.PTM.BLL.Services
 {
     public interface IBordroService:IService<Bordro>
     {
+        public decimal AylikMaasHesapla(string tcNo, DateTime isBaslamaTarihi, decimal maas);
     }
 }

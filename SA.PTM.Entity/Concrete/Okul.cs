@@ -12,7 +12,8 @@ namespace SA.PTM.Entity.Concrete
         public string OkulAdi { get; set; }
         public string MezuniyetDerecesi { get; set; }
         public DateTime MezuniyetTarihi { get; set; }
-        public string DiplomaOrnegi { get; set; }
+        public string? DiplomaOrnegi { get; set; }
+        public string? EgitimTipleri { get; set; }
 
         public int EgitimBilgisiId { get; set; }
         public EgitimBilgisi EgitimBilgisi { get; set; }

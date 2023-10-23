@@ -10,6 +10,6 @@ namespace SA.PTM.BLL.Services
 {
     public interface IAvansService :IService<Avans>
     {
-
+        public bool AvansVer(decimal maas, string tcNo, decimal verilenAvans, int odemeVadesi);
     }
 }

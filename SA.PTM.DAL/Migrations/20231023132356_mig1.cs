@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SA.PTM.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Mig1 : Migration
+    public partial class mig1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -39,6 +39,7 @@ namespace SA.PTM.DAL.Migrations
                     Ad = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Soyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DogumTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BaslangicTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DogumYeri = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Anne = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Baba = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -201,7 +202,8 @@ namespace SA.PTM.DAL.Migrations
                     OkulAdi = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MezuniyetDerecesi = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MezuniyetTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DiplomaOrnegi = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DiplomaOrnegi = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EgitimTipleri = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EgitimBilgisiId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

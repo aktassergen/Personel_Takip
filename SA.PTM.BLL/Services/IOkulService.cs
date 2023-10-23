@@ -9,5 +9,6 @@ namespace SA.PTM.BLL.Services
 {
     public interface IOkulService : IService<Okul>
     {
+        public int okulId(int okulId);
     }
 }

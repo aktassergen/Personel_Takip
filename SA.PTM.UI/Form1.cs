@@ -31,6 +31,14 @@ namespace SA.PTM.UI
         public Form1()
         {
             InitializeComponent();
+            MaascomboBox.Items.Add("Her ayýn 15'i");
+            MaascomboBox.Items.Add("Her ayýn 21'i");
+            MaascomboBox.SelectedIndex = 0;
+
+            button11.Visible = false;
+            button12.Visible = false;
+            button13.Visible = false;
+            button14.Visible = false;
 
         }
 
@@ -44,27 +52,46 @@ namespace SA.PTM.UI
             DateTime dogumTarihi = DogumTarihidateTimePicker1.Value;
             string tcNo = TCtextBox.Text;
             bool tcNoBenzersiz = IsTcNoUnique(tcNo);
+
             if (yoneticiId != -1 && tcNoBenzersiz)
             {
-                
+
                 Personel personel = new Personel();
 
-                    personel.YoneticiId = yoneticiId;
-                    personel.Ad = AdtextBox.Text;
-                    personel.Anne = AnnetextBox.Text;
-                    personel.Baba = BabatextBox.Text;
-                    personel.Departman = DepartmantextBox.Text;
-                    personel.DogumTarihi = dogumTarihi;
-                    personel.MedeniDurumu = MedeniDtextBox.Text;
-                    personel.DogumYeri = DogumYtextBox.Text;
-                    personel.TcNo = tcNo;
-                    personel.Rol = RoltextBox.Text;
-                    personel.YasadigiSehir = SehirtextBox.Text;
-                    personel.Soyad = SoyadtextBox.Text;  
+                personel.YoneticiId = yoneticiId;
+                personel.Ad = AdtextBox.Text;
+                personel.Anne = AnnetextBox.Text;
+                personel.Baba = BabatextBox.Text;
+                personel.Departman = DepartmantextBox.Text;
+                personel.DogumTarihi = dogumTarihi;
+                personel.MedeniDurumu = MedeniDtextBox.Text;
+                personel.DogumYeri = DogumYtextBox.Text;
+                personel.TcNo = tcNo;
+                personel.Rol = RoltextBox.Text;
+                personel.YasadigiSehir = SehirtextBox.Text;
+                personel.Soyad = SoyadtextBox.Text;
+                personel.BaslangicTarihi = IseGirisTarihidateTimePicker.Value;
 
-            personelService.Insert(personel);
-            personelService.SaveChanges();
-            MessageBox.Show("Ekleme baþarýlý.");
+
+
+
+                EgitimBilgisi egitimBilgisi = new EgitimBilgisi
+                {
+                    PersonelId = personel.Id,
+                };
+                personel.EgitimBilgisi = egitimBilgisi;
+
+
+                OzlukBilgisi ozlukBilgisi = new OzlukBilgisi
+                {
+                    PersonelId = personel.Id,
+                };
+                personel.OzlukBilgisi = ozlukBilgisi;
+
+                personelService.Insert(personel);
+                personelService.SaveChanges();
+                MessageBox.Show("Ekleme baþarýlý.");
+
 
             }
             else
@@ -74,52 +101,16 @@ namespace SA.PTM.UI
 
 
         }
-
-        private void BilgileriGoruntulebutton_Click(object sender, EventArgs e)
-        {
-            string tcNo = TCGiristextBox10.Text;
-            IEnumerable<Personel> personeller = personelService.GetAll().Where(p => p.TcNo == tcNo);
-
-            if (personeller.Any())
-            {
-                Personel personel = personeller.FirstOrDefault(); // Ýlk kiþiyi alýyoruz, gerekirse uygun kiþiyi seçmelisiniz
-
-                AdtextBox.Text = personel.Ad;
-                SoyadtextBox.Text = personel.Soyad;
-                AnnetextBox.Text = personel.Anne;
-                BabatextBox.Text = personel.Baba;
-                TCtextBox.Text = personel.TcNo;
-                DepartmantextBox.Text = personel.Departman;
-                DogumTarihidateTimePicker1.Value = personel.DogumTarihi;
-                MedeniDtextBox.Text = personel.MedeniDurumu;
-                DogumYtextBox.Text = personel.DogumYeri;
-                RoltextBox.Text = personel.Rol;
-                SehirtextBox.Text = personel.YasadigiSehir;
-
-                if (personel.OzlukBilgisi != null)
-                {
-                    ÝkamettextBox.Text = personel.OzlukBilgisi.IkametAdresi;
-                }
-                else
-                {
-                    ÝkamettextBox.Text = "Ýkamet adresi bulunamadý.";
-                }
-            }
-            else
-            {
-                MessageBox.Show("Personel bulunamadý.");
-            }
-        }
-
         private void PersonelGuncellebutton_Click(object sender, EventArgs e)
         {
-            string tcNo = TCGiristextBox10.Text; // Güncellenmesi gereken personelin TC kimlik numarasý
-            Personel personel = personelService.PersonelGiris(tcNo);
+            string tcNo = TCGiristextBox11.Text; // Güncellenmesi gereken personelin TC kimlik numarasý
+            int personelId = personelService.PersonelGiris(tcNo);
 
             DateTime dogumTarihi = DogumTarihidateTimePicker1.Value;
 
-            if (personel != null)
+            if (personelId != -1)
             {
+                Personel personel = personelService.GetById(personelId);
                 personel.Ad = AdtextBox.Text;
                 personel.Anne = AnnetextBox.Text;
                 personel.Baba = BabatextBox.Text;
@@ -131,13 +122,13 @@ namespace SA.PTM.UI
                 personel.Rol = RoltextBox.Text;
                 personel.YasadigiSehir = SehirtextBox.Text;
                 personel.Soyad = SoyadtextBox.Text;
+                personel.BaslangicTarihi = IseGirisTarihidateTimePicker.Value;
 
-
-                // Diðer alanlarý da güncelleyin...
-
-                //personelService.Update(personel);
+                // Personel bilgilerini güncelleyin
+                personelService.Update(personel);
                 personelService.SaveChanges();
-                MessageBox.Show("Güncelleme baþarýlý.");
+
+                MessageBox.Show("Personel güncellendi.");
             }
             else
             {
@@ -148,15 +139,17 @@ namespace SA.PTM.UI
 
         private void PersonelSilbutton_Click(object sender, EventArgs e)
         {
-            string tcNo = TCGiristextBox10.Text; // Silinmesi gereken personelin TC kimlik numarasý
-            Personel personel = personelService.PersonelGiris(tcNo);
+            string tcNo = TCGiristextBox11.Text; // Silinmesi gereken personelin TC kimlik numarasý
+            int personelId = personelService.PersonelGiris(tcNo);
 
-            if (personel != null)
+            // Eðer verilen TC kimlik numarasýna sahip bir personel bulunursa
+            if (personelId != -1)
             {
                 // Personel veritabanýnda bulundu, silme iþlemi yapabilirsiniz.
+                Personel personel = personelService.GetById(personelId);
                 personelService.Delete(personel);
                 personelService.SaveChanges();
-                MessageBox.Show("Silme baþarýlý.");
+                MessageBox.Show("Personel silindi.");
             }
             else
             {
@@ -169,13 +162,13 @@ namespace SA.PTM.UI
             string tcNo = TCtextBox.Text;
             string yeniIkametAdresi = ÝkamettextBox.Text;
 
-            // Personeli TcNo'ya göre al
-            Personel personel = personelService.PersonelGiris(tcNo);
+            // TC kimlik numarasýna sahip personeli al
+            int personelId = personelService.PersonelGiris(tcNo);
 
-            if (personel != null)
+            if (personelId != -1)
             {
                 // Kiþiye ait özlük bilgilerini al
-                OzlukBilgisi ozlukBilgisi = ozlukBilgisiService.GetAll().FirstOrDefault(p => p.PersonelId == personel.Id);
+                OzlukBilgisi ozlukBilgisi = ozlukBilgisiService.GetAll().FirstOrDefault(p => p.PersonelId == personelId);
 
                 if (ozlukBilgisi != null)
                 {
@@ -219,145 +212,133 @@ namespace SA.PTM.UI
         private void IkametGuncellebutton_Click(object sender, EventArgs e)
         {
             string tcNo = TCtextBox.Text;
+            string yeniIkametAdresi = ÝkamettextBox.Text;
 
-            // Veritabanýnda bu TcNo'ya sahip baþka bir kayýt var mý kontrol et
-            bool isTcNoExists = personelService.GetAll().Any(p => p.TcNo == tcNo);
+            // TC kimlik numarasýna sahip personeli al
+            int personelId = personelService.PersonelGiris(tcNo);
 
-            if (isTcNoExists)
+            if (personelId != -1)
             {
-                // TC'ye göre ilgili personeli bul
-                Personel personel = personelService.PersonelGiris(tcNo);
+                // Kiþiye ait özlük bilgilerini al
+                OzlukBilgisi ozlukBilgisi = ozlukBilgisiService.GetAll().FirstOrDefault(p => p.PersonelId == personelId);
 
-                // Ýlgili personelin Id'sini al
-                int personelId = personel.Id;
-
-                // Ýkamet adresini TextBox'tan al
-                string yeniIkametAdresi = ÝkamettextBox.Text;
-
-                // Ýkamet bilgisini veritabanýndan al
-                OzlukBilgisi eskiIkametBilgisi = ozlukBilgisiService.GetAll().FirstOrDefault(o => o.PersonelId == personelId);
-
-                if (eskiIkametBilgisi != null)
+                if (ozlukBilgisi != null)
                 {
-                    // Eski ikamet bilgisini güncelle
-                    eskiIkametBilgisi.IkametAdresi = yeniIkametAdresi;
-
-                    // Güncelleme iþlemini gerçekleþtir
-                    ozlukBilgisiService.Update(eskiIkametBilgisi);
-
-                    MessageBox.Show("Ýkamet bilgisi baþarýyla güncellendi.");
+                    // Kiþiye ait mevcut ikametgah bilgisini güncelle
+                    ozlukBilgisi.IkametAdresi = yeniIkametAdresi;
+                    ozlukBilgisiService.Update(ozlukBilgisi);
+                    MessageBox.Show("Ýkametgah bilgisi baþarýyla güncellendi.");
                 }
                 else
                 {
-                    // Eski ikamet bilgisi bulunamadýysa, yeni bir ikamet bilgisi oluþturun ve ekleyin
-                    OzlukBilgisi yeniIkametBilgisi = new OzlukBilgisi
-                    {
-                        PersonelId = personelId,
-                        IkametAdresi = yeniIkametAdresi
-                    };
-
-                    // Yeni ikamet bilgisini ekleyin
-                    ozlukBilgisiService.Insert(yeniIkametBilgisi);
-
-                    MessageBox.Show("Ýkamet bilgisi baþarýyla eklenmiþtir.");
+                    // Özlük bilgisi bulunamadý, önce özlük bilgilerini eklemeniz gerekebilir
+                    MessageBox.Show("Bu personelin özlük bilgileri bulunamadý. Önce özlük bilgilerini eklemelisiniz.");
                 }
             }
             else
             {
-                // Kiþi TC'ye sahip deðilse kullanýcýya uygun bir mesaj gösterilebilir.
-                MessageBox.Show("TC'ye sahip personel bulunamadý. Lütfen geçerli bir TC girin.");
+                // Personel bulunamadý, kullanýcýya uygun bir mesaj gösterilebilir
+                MessageBox.Show("Belirtilen TC kimlik numarasýna sahip personel bulunamadý.");
             }
         }
 
         private void SaglikRaporuEklebutton_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "PDF Dosyalarý|*.pdf|Tüm Dosyalar|*.*";
-            string tcNo = TCtextBox.Text;
-            Personel personel = personelService.PersonelGiris(tcNo);
+            //OpenFileDialog openFileDialog = new OpenFileDialog();
+            //openFileDialog.Filter = "PDF Dosyalarý|*.pdf|Tüm Dosyalar|*.*";
+            //string tcNo = TCtextBox.Text;
+            //Personel personel = personelService.PersonelGiris(tcNo);
 
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                // Dosya yolu olarak PDF dosyasýný saklayýn
-                string pdfDosyaYolu = openFileDialog.FileName;
+            //if (openFileDialog.ShowDialog() == DialogResult.OK)
+            //{
+            //    // Dosya yolu olarak PDF dosyasýný saklayýn
+            //    string pdfDosyaYolu = openFileDialog.FileName;
 
 
-                // Mevcut PersonelId'ye ait özlük bilgisi varsa güncelleyin, yoksa yeni bir özlük bilgisi oluþturun
-                OzlukBilgisi ozluk = ozlukBilgisiService.GetById(personel.Id);
-                if (ozluk == null)
-                {
-                    ozluk = new OzlukBilgisi();
-                    ozluk.PersonelId = personel.Id;
-                }
+            //    // Mevcut PersonelId'ye ait özlük bilgisi varsa güncelleyin, yoksa yeni bir özlük bilgisi oluþturun
+            //    OzlukBilgisi ozluk = ozlukBilgisiService.GetById(personel.Id);
+            //    if (ozluk == null)
+            //    {
+            //        ozluk = new OzlukBilgisi();
+            //        ozluk.PersonelId = personel.Id;
+            //    }
 
-                // Diðer özellikleri ayarlayýn
-                // ...
+            //    // Diðer özellikleri ayarlayýn
+            //    // ...
 
-                // PDF dosyasýný yükleyin
-                ozluk.SaglikRaporu = pdfDosyaYolu;
+            //    // PDF dosyasýný yükleyin
+            //    ozluk.SaglikRaporu = pdfDosyaYolu;
 
-                // Veritabanýna kaydedin veya güncelleyin
-                if (ozluk.Id > 0)
-                {
-                    ozlukBilgisiService.Update(ozluk);
-                }
-                else
-                {
-                    ozlukBilgisiService.Insert(ozluk);
-                }
+            //    // Veritabanýna kaydedin veya güncelleyin
+            //    if (ozluk.Id > 0)
+            //    {
+            //        ozlukBilgisiService.Update(ozluk);
+            //    }
+            //    else
+            //    {
+            //        ozlukBilgisiService.Insert(ozluk);
+            //    }
 
-                // CheckBox'ý iþaretle (seçili olarak ayarla)
-                SaglikRaporucheckBox.Checked = true;
-                MessageBox.Show("Saðlýk raporu kaydedildi.");
-            }
+            //    // CheckBox'ý iþaretle (seçili olarak ayarla)
+            //    MessageBox.Show("Saðlýk raporu kaydedildi.");
+            //}
         }
 
         private void SaglikRapGoruntulebutton_Click(object sender, EventArgs e)
         {
-            string tcNo = TCtextBox.Text; // TcNo giriþi
-            Personel personel = personelService.PersonelGiris(tcNo);
+            //string tcNo = TCtextBox.Text; // TcNo giriþi
+            //Personel personel = personelService.PersonelGiris(tcNo);
 
-            if (personel != null)
-            {
-                List<OzlukBilgisi> ozlukBilgileri = ozlukBilgisiService.GetAll().Where(p => p.PersonelId == personel.Id).ToList();
+            //if (personel != null)
+            //{
+            //    List<OzlukBilgisi> ozlukBilgileri = ozlukBilgisiService.GetAll().Where(p => p.PersonelId == personel.Id).ToList();
 
-                if (ozlukBilgileri.Count > 0)
-                {
-                    // Ýlgili kiþiye ait özlük bilgileri var, burada görüntüleyebilirsiniz
-                    foreach (OzlukBilgisi ozluk in ozlukBilgileri)
-                    {
-                        // Dosyayý görüntüle
-                        if (!string.IsNullOrEmpty(ozluk.SaglikRaporu) && ozluk.PersonelId == personel.Id)
-                        {
-                            Process.Start(ozluk.SaglikRaporu);
-                            // Diðer dosyalarý da görüntüleyebilirsiniz
-                        }
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Kiþiye ait özlük bilgisi bulunamadý.");
-                }
-            }
-            else
-            {
-                MessageBox.Show("Kiþi bulunamadý.");
-            }
+            //    if (ozlukBilgileri.Count > 0)
+            //    {
+            //        // Ýlgili kiþiye ait özlük bilgileri var, burada görüntüleyebilirsiniz
+            //        foreach (OzlukBilgisi ozluk in ozlukBilgileri)
+            //        {
+            //            // Dosyayý görüntüle
+            //            if (!string.IsNullOrEmpty(ozluk.SaglikRaporu) && ozluk.PersonelId == personel.Id)
+            //            {
+            //                Process.Start(ozluk.SaglikRaporu);
+            //                // Diðer dosyalarý da görüntüleyebilirsiniz
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show("Kiþiye ait özlük bilgisi bulunamadý.");
+            //    }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Kiþi bulunamadý.");
+            //}
         }
 
         private void MaasEklebutton_Click(object sender, EventArgs e)
         {
             string tcNo = TCtextBox.Text;
+            int personelId = personelService.PersonelGiris(tcNo);
 
-            Personel personel = personelService.PersonelGiris(tcNo);
-
-            if (personel != null)
+            if (personelId != -1)
             {
-                int personelId = personel.Id;
+
 
                 if (decimal.TryParse(MaastextBox.Text, out decimal yeniMaas))
                 {
-                    DateTime odemeTarihi = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                    DateTime odemeTarihi = DateTime.MinValue; // Baþlangýç deðeri atanýyor
+
+                    if (MaascomboBox.SelectedItem.ToString() == "Her ayýn 15'i")
+                    {
+                        odemeTarihi = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 15);
+                    }
+                    else if (MaascomboBox.SelectedItem.ToString() == "Her ayýn 21'i")
+                    {
+                        odemeTarihi = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 21);
+                    }
+
                     MaasBilgisi eskiMaasBilgisi = maasBilgisiService.GetAll().FirstOrDefault(o => o.PersonelId == personelId);
 
                     if (eskiMaasBilgisi != null)
@@ -429,6 +410,9 @@ namespace SA.PTM.UI
             if (yoneticiId != -1)
             {
                 MessageBox.Show("Giriþ baþarýlý. Yönetici ID: " + yoneticiId);
+                GirisPanelpanel.Visible = false;
+                bilgilerigetirpnl.Visible = true;
+
 
                 // Giriþ yaptýktan sonra yapýlacak iþlemleri burada gerçekleþtirebilirsiniz.
             }
@@ -466,12 +450,775 @@ namespace SA.PTM.UI
 
         private bool IsTcNoUnique(string tcNo)
         {
-            // Veritabanýnda ayný TcNo'ya sahip baþka bir personel var mý kontrol edin.
             using (var dbContext = new PersonelTakipDbContext())
             {
                 var existingPersonel = dbContext.Personeller.FirstOrDefault(p => p.TcNo == tcNo);
                 return existingPersonel == null;
             }
         }
+
+        private void ÝzinEklebutton_Click_1(object sender, EventArgs e)
+        {
+            string tcNo = TCGiristextBox11.Text;
+            Personel personel = personelService.GetAll().FirstOrDefault(p => p.TcNo == tcNo);
+
+            if (personel != null)
+            {
+                DateTime baslangicTarihi = IzinBaslangicdateTimePicker.Value;
+                DateTime bitisTarihi = IzinBitisdateTimePicker.Value;
+
+                TimeSpan izinSuresi = bitisTarihi - baslangicTarihi;
+                int izinGunSayisi = (int)izinSuresi.TotalDays;
+
+                string izinTuru = izinGunSayisi + " günlük izin";
+
+                IzinBilgisi yeniIzin = new IzinBilgisi
+                {
+                    PersonelId = personel.Id,
+                    IzinBaslangicTarihi = baslangicTarihi,
+                    IzinBitisTarihi = bitisTarihi,
+                    IzinTuru = izinTuru
+                };
+
+                izinBilgisiService.Insert(yeniIzin);
+
+
+            }
+            else
+            {
+                MessageBox.Show("Personel bulunamadý. Lütfen geçerli bir TC girin.");
+            }
+        }
+
+        private void DiplomaEklebutton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void OkulBilgileriEklebutton_Click(object sender, EventArgs e)
+        {
+
+
+            DateTime mezuniyetTarihi = MezniyetdateTimePicker.Value;
+            string tcNo = TCtextBox.Text;
+            int personelId = personelService.PersonelGiris(tcNo);
+
+            if (personelId != -1)
+            {
+                int egitimBilgisiId = egitimBilgisiService.EgitimIdId(personelId);
+                if (egitimBilgisiId != -1)
+                {
+                    Okul okul = new Okul
+                    {
+
+                        OkulAdi = OkulAditextBox.Text,
+                        MezuniyetDerecesi = MezuniyettextBox.Text,
+                        MezuniyetTarihi = MezniyetdateTimePicker.Value,
+                        EgitimBilgisiId = egitimBilgisiId,
+                        EgitimTipleri = EgitimTipicomboBox.Text
+
+                    };
+
+                    okulService.Insert(okul);
+
+                    MessageBox.Show("Okul bilgisi eklendi.");
+                }
+                else
+                {
+                    MessageBox.Show("Kiþiye ait eðitim bilgisi bulunamadý.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("TcNo'ya sahip kiþi bulunamadý.");
+            }
+
+        }
+
+        private void SertifikaEklebutton_Click(object sender, EventArgs e)
+        {
+            string tcNo = TCtextBox.Text;
+            int personelId = personelService.PersonelGiris(tcNo);
+
+            if (personelId != -1)
+            {
+                int egitimBilgisiId = egitimBilgisiService.EgitimIdId(personelId);
+                if (egitimBilgisiId != -1)
+                {
+                    Sertifika sertifika = new Sertifika
+                    {
+
+                        SertifikaAdi = SertifikatextBox.Text,
+                        SertifikaTarihi = SertifikadateTimePicker.Value,
+                        EgitimBilgisiId = egitimBilgisiId,
+                        AlinanKurum = AlinanKurumtextBox.Text,
+
+
+
+                    };
+
+                    SertifikaService.Insert(sertifika);
+
+                    MessageBox.Show("sertidika bilgisi eklendi.");
+                }
+                else
+                {
+                    MessageBox.Show("Kiþiye ait eðitim bilgisi bulunamadý.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("TcNo'ya sahip kiþi bulunamadý.");
+            }
+        }
+
+        private void SertifikaGuncellebutton_Click(object sender, EventArgs e)
+        {
+            string selectedSertifika = SertifikalistBox.SelectedItem as string;
+            if (selectedSertifika != null)
+            {
+                string[] SertifikaBilgileri = selectedSertifika.Split('-');
+                string tcNo = TCtextBox.Text;
+                int personelId = personelService.PersonelGiris(tcNo);
+
+                if (personelId != -1)
+                {
+                    int SertifikaId = int.Parse(selectedSertifika.Split('-')[0]);
+                    int egitimBilgisiId = egitimBilgisiService.EgitimIdId(personelId);
+                    if (egitimBilgisiId != -1)
+                    {
+
+                        Sertifika sertifika = SertifikaService.GetById(SertifikaId);
+
+                        sertifika.SertifikaTarihi = SirketiciEgitimdateTimePicker.Value;
+                        sertifika.SertifikaAdi = SertifikatextBox.Text;
+                        sertifika.AlinanKurum = AlinanKurumtextBox.Text;
+
+
+                        SertifikaService.Update(sertifika);
+                        SertifikaService.SaveChanges();
+
+                        MessageBox.Show("Okul bilgisi güncellendi.");
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Kiþiye ait eðitim bilgisi bulunamadý.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("seçim yapýlmadý");
+                }
+            }
+        }
+
+        private void SertifikaSilbutton_Click(object sender, EventArgs e)
+        {
+            string selectedSertifika = SertifikalistBox.SelectedItem as string;
+            if (selectedSertifika != null)
+            {
+                string[] SertifikaBilgileri = selectedSertifika.Split('-');
+                string tcNo = TCtextBox.Text;
+                int personelId = personelService.PersonelGiris(tcNo);
+
+                if (personelId != -1)
+                {
+                    int SertifikaId = int.Parse(selectedSertifika.Split('-')[0]);
+                    int egitimBilgisiId = egitimBilgisiService.EgitimIdId(personelId);
+                    if (egitimBilgisiId != -1)
+                    {
+
+                        Sertifika sertifika = SertifikaService.GetById(SertifikaId);
+
+                        sertifika.SertifikaTarihi = SirketiciEgitimdateTimePicker.Value;
+                        sertifika.SertifikaAdi = SertifikatextBox.Text;
+                        sertifika.AlinanKurum = AlinanKurumtextBox.Text;
+
+
+                        SertifikaService.Delete(sertifika);
+                        SertifikaService.SaveChanges();
+
+                        MessageBox.Show("Okul bilgisi güncellendi.");
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Kiþiye ait eðitim bilgisi bulunamadý.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("seçim yapýlmadý");
+                }
+            }
+        }
+
+        private void SirketIiciEgitimEklebutton_Click(object sender, EventArgs e)
+        {
+            string tcNo = TCtextBox.Text;
+            int personelId = personelService.PersonelGiris(tcNo);
+
+            if (personelId != -1)
+            {
+                int egitimBilgisiId = egitimBilgisiService.EgitimIdId(personelId);
+                if (egitimBilgisiId != -1)
+                {
+                    SirketIciEgitim sirketIciEgitim = new SirketIciEgitim
+                    {
+                        AlinmaTarihi = SirketiciEgitimdateTimePicker.Value,
+                        EgitimAdi = SirketiciegitimtextBox.Text,
+                        EgitimBilgisiId = egitimBilgisiId,
+                    };
+
+                    sirketIciEgitimService.Insert(sirketIciEgitim);
+
+                    MessageBox.Show("egitim bilgisi eklendi.");
+                }
+                else
+                {
+                    MessageBox.Show("Kiþiye ait eðitim bilgisi bulunamadý.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("TcNo'ya sahip kiþi bulunamadý.");
+            }
+        }
+
+        private void SirketIiciEgitimGuncellebutton_Click(object sender, EventArgs e)
+        {
+            string selectedEgitim = SirketiciegitimlistBox.SelectedItem as string;
+            if (selectedEgitim != null)
+            {
+                string[] okulBilgileri = selectedEgitim.Split('-');
+                string tcNo = TCtextBox.Text;
+                int personelId = personelService.PersonelGiris(tcNo);
+
+                if (personelId != -1)
+                {
+                    int egitimId = int.Parse(selectedEgitim.Split('-')[0]);
+                    int egitimBilgisiId = egitimBilgisiService.EgitimIdId(personelId);
+                    if (egitimBilgisiId != -1)
+                    {
+
+                        SirketIciEgitim sirketIciEgitim = sirketIciEgitimService.GetById(egitimId);
+
+                        sirketIciEgitim.AlinmaTarihi = SirketiciEgitimdateTimePicker.Value;
+                        sirketIciEgitim.EgitimAdi = SirketiciegitimtextBox.Text;
+
+
+
+
+
+                        sirketIciEgitimService.Update(sirketIciEgitim);
+                        sirketIciEgitimService.SaveChanges();
+
+                        MessageBox.Show("egitim bilgisi güncellendi.");
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Kiþiye ait eðitim bilgisi bulunamadý.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("seçim yapýlmadý");
+                }
+            }
+        }
+
+        private void SirketIiciEgitimSilbutton_Click(object sender, EventArgs e)
+        {
+            string selectedEgitim = SirketiciegitimlistBox.SelectedItem as string;
+            if (selectedEgitim != null)
+            {
+                string[] okulBilgileri = selectedEgitim.Split('-');
+                string tcNo = TCtextBox.Text;
+                int personelId = personelService.PersonelGiris(tcNo);
+
+                if (personelId != -1)
+                {
+                    int egitimId = int.Parse(selectedEgitim.Split('-')[0]);
+                    int egitimBilgisiId = egitimBilgisiService.EgitimIdId(personelId);
+                    if (egitimBilgisiId != -1)
+                    {
+
+                        SirketIciEgitim sirketIciEgitim = sirketIciEgitimService.GetById(egitimId);
+
+                        sirketIciEgitim.AlinmaTarihi = SirketiciEgitimdateTimePicker.Value;
+                        sirketIciEgitim.EgitimAdi = SirketiciegitimtextBox.Text;
+
+                        sirketIciEgitimService.Delete(sirketIciEgitim);
+                        sirketIciEgitimService.SaveChanges();
+
+                        MessageBox.Show("Okul bilgisi güncellendi.");
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Kiþiye ait eðitim bilgisi bulunamadý.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("seçim yapýlmadý");
+                }
+            }
+
+        }
+
+        private void OkulBilgileriSilbutton_Click(object sender, EventArgs e)
+        {
+            string selectedOkul = OkullistBox.SelectedItem as string;
+            if (selectedOkul != null)
+            {
+                string[] okulBilgileri = selectedOkul.Split(':');
+                string tcNo = TCtextBox.Text;
+                int personelId = personelService.PersonelGiris(tcNo);
+
+                if (personelId != -1)
+                {
+                    int okulId = int.Parse(selectedOkul.Split(':')[0]);
+                    int egitimBilgisiId = egitimBilgisiService.EgitimIdId(personelId);
+                    if (egitimBilgisiId != -1)
+                    {
+
+                        Okul okul = okulService.GetById(okulId);
+                        okulService.Delete(okul);
+                        okulService.SaveChanges();
+
+                        MessageBox.Show("Okul bilgisi Silindi.");
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Kiþiye ait eðitim bilgisi bulunamadý.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("seçim yapýlmadý");
+                }
+            }
+        }
+
+        private void OkulBilgileriGuncellebutton_Click(object sender, EventArgs e)
+        {
+            string selectedOkul = OkullistBox.SelectedItem as string;
+            if (selectedOkul != null)
+            {
+                string[] okulBilgileri = selectedOkul.Split(':');
+                string tcNo = TCtextBox.Text;
+                int personelId = personelService.PersonelGiris(tcNo);
+
+                if (personelId != -1)
+                {
+                    int okulId = int.Parse(selectedOkul.Split(':')[0]);
+                    int egitimBilgisiId = egitimBilgisiService.EgitimIdId(personelId);
+                    if (egitimBilgisiId != -1)
+                    {
+
+                        Okul okul = okulService.GetById(okulId);
+
+
+                        okul.OkulAdi = OkulAditextBox.Text;
+                        okul.MezuniyetDerecesi = MezuniyettextBox.Text;
+                        okul.MezuniyetTarihi = MezniyetdateTimePicker.Value;
+                        okul.EgitimBilgisiId = egitimBilgisiId;
+                        okul.EgitimTipleri = EgitimTipicomboBox.Text;
+
+
+
+                        okulService.Update(okul);
+                        okulService.SaveChanges();
+
+                        MessageBox.Show("Okul bilgisi güncellendi.");
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Kiþiye ait eðitim bilgisi bulunamadý.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("seçim yapýlmadý");
+                }
+            }
+        }
+
+        private void KullaniciTanýmlabutton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void IzinGuncellebutton_Click(object sender, EventArgs e)
+        {
+            string selectedizin = IzinlistBox.SelectedItem as string;
+            if (selectedizin != null)
+            {
+                string[] izinBilgileriId = selectedizin.Split('-');
+                string tcNo = TCtextBox.Text;
+                int personelId = personelService.PersonelGiris(tcNo);
+
+                if (personelId != -1)
+                {
+                    int izinId = int.Parse(selectedizin.Split('-')[0]);
+                    DateTime baslangicTarihi = IzinBaslangicdateTimePicker.Value;
+                    DateTime bitisTarihi = IzinBitisdateTimePicker.Value;
+
+                    TimeSpan izinSuresi = bitisTarihi - baslangicTarihi;
+                    int izinGunSayisi = (int)izinSuresi.TotalDays;
+
+                    string izinTuru = izinGunSayisi + " günlük izin";
+
+
+                    IzinBilgisi izin = izinBilgisiService.GetById(izinId);
+
+                    izin.IzinBaslangicTarihi = IzinBaslangicdateTimePicker.Value;
+                    izin.IzinBitisTarihi = IzinBitisdateTimePicker.Value;
+                    izin.IzinTuru = izinTuru;
+
+
+
+                    izinBilgisiService.Update(izin);
+                    izinBilgisiService.SaveChanges();
+
+                    MessageBox.Show("izin bilgisi güncellendi.");
+
+
+
+                }
+                else
+                {
+                    MessageBox.Show("seçim yapýlmadý");
+                }
+            }
+        }
+
+        private void Izinsilbutton_Click(object sender, EventArgs e)
+        {
+            string selectedizin = IzinlistBox.SelectedItem as string;
+            if (selectedizin != null)
+            {
+                string[] izinBilgileriId = selectedizin.Split('-');
+                string tcNo = TCtextBox.Text;
+                int personelId = personelService.PersonelGiris(tcNo);
+
+                if (personelId != -1)
+                {
+                    int izinId = int.Parse(selectedizin.Split('-')[0]);
+                    DateTime baslangicTarihi = IzinBaslangicdateTimePicker.Value;
+                    DateTime bitisTarihi = IzinBitisdateTimePicker.Value;
+
+                    TimeSpan izinSuresi = bitisTarihi - baslangicTarihi;
+                    int izinGunSayisi = (int)izinSuresi.TotalDays;
+
+                    string izinTuru = izinGunSayisi + " günlük izin";
+
+
+                    IzinBilgisi izin = izinBilgisiService.GetById(izinId);
+
+                    izin.IzinBaslangicTarihi = IzinBaslangicdateTimePicker.Value;
+                    izin.IzinBitisTarihi = IzinBitisdateTimePicker.Value;
+                    izin.IzinTuru = izinTuru;
+
+
+
+                    izinBilgisiService.Delete(izin);
+                    izinBilgisiService.SaveChanges();
+
+                    MessageBox.Show("izin bilgisi silindi.");
+
+
+
+                }
+                else
+                {
+                    MessageBox.Show("seçim yapýlmadý");
+                }
+            }
+        }
+
+        private void IzinBilgileriGoruntulebutton_Click(object sender, EventArgs e)
+        {
+            string tcNo = TCGiristextBox11.Text;
+            IEnumerable<Personel> personeller = personelService.GetAll().Where(p => p.TcNo == tcNo);
+            var izinBilgileri = from Personel in personelService.GetAll()
+                                join izin in izinBilgisiService.GetAll()
+                                on Personel.Id equals izin.PersonelId
+                                where Personel.TcNo == tcNo
+                                select new
+                                {
+                                    izinId = izin.Id,
+                                    BaslangicTarihi = izin.IzinBaslangicTarihi,
+                                    BitisTarihi = izin.IzinBitisTarihi,
+                                    IzinTuru = izin.IzinTuru
+                                };
+
+            if (izinBilgileri.Any())
+            {
+                IzinlistBox.Items.Clear(); // ListBox'ý temizleyin
+
+                foreach (var izin in izinBilgileri)
+                {
+                    string izinBilgisi = $"{izin.izinId} - {izin.BaslangicTarihi?.ToShortDateString()} - {izin.BitisTarihi?.ToShortDateString()} - {izin.IzinTuru}";
+                    IzinlistBox.Items.Add(izinBilgisi);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Personelin izin bilgisi bulunamadý.");
+            }
+        }
+        private void BordroBilgileriGetirbutton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void OkulBilgileriGoruntulebutton_Click(object sender, EventArgs e)
+        {
+            // TC kimlik numarasýný alýn (TCtextBox'ten)
+            string tcNo = TCtextBox.Text;
+
+            // Personel hizmetini kullanarak ilgili personeli bulun
+            IEnumerable<Personel> personeller = personelService.GetAll().Where(p => p.TcNo == tcNo);
+
+            var OkulBilgileri = from Personel in personelService.GetAll()
+                                join egitim in egitimBilgisiService.GetAll() on Personel.Id equals egitim.PersonelId
+                                join Okul in okulService.GetAll() on egitim.Id equals Okul.EgitimBilgisiId
+                                where Personel.TcNo == tcNo
+                                select new
+                                {
+                                    okulId = Okul.Id,
+                                    Okuladi = Okul.OkulAdi,
+                                    Derecesi = Okul.MezuniyetDerecesi,
+                                    Btarihi = Okul.MezuniyetTarihi,
+                                    Tipi = Okul.EgitimTipleri,
+                                };
+
+
+            if (OkulBilgileri.Any())
+            {
+                OkullistBox.Items.Clear(); // ListBox'ý temizleyin
+
+                foreach (var okul in OkulBilgileri)
+                {
+                    string OkulBilgisi = $" {okul.okulId}  : {okul.Okuladi}   : {okul.Btarihi.ToShortDateString()} : {okul.Derecesi}  :{okul.Tipi}";
+                    OkullistBox.Items.Add(OkulBilgisi);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Personelin okul bilgisi bulunamadý.");
+            }
+
+
+        }
+
+        private void SirketEgitimBilgileriGetirbtn_Click(object sender, EventArgs e)
+        {
+            // TC kimlik numarasýný alýn (TCtextBox'ten)
+            string tcNo = TCtextBox.Text;
+
+            // Personel hizmetini kullanarak ilgili personeli bulun
+            IEnumerable<Personel> personeller = personelService.GetAll().Where(p => p.TcNo == tcNo);
+
+            var SirketEgitimBilgileri = from Personel in personelService.GetAll()
+                                        join egitim in egitimBilgisiService.GetAll() on Personel.Id equals egitim.PersonelId
+                                        join SirketIciEgitim in sirketIciEgitimService.GetAll() on egitim.Id equals SirketIciEgitim.EgitimBilgisiId
+                                        where Personel.TcNo == tcNo
+                                        select new
+                                        {
+                                            EId = SirketIciEgitim.Id,
+                                            Atarihi = SirketIciEgitim.AlinmaTarihi,
+                                            EAdi = SirketIciEgitim.EgitimAdi,
+                                        };
+
+
+            if (SirketEgitimBilgileri.Any())
+            {
+                SirketiciegitimlistBox.Items.Clear(); // ListBox'ý temizleyin
+
+                foreach (var egitim in SirketEgitimBilgileri)
+                {
+                    string OkulBilgisi = $" {egitim.EId}  - {egitim.Atarihi}   -  {egitim.EAdi}  ";
+                    SirketiciegitimlistBox.Items.Add(OkulBilgisi);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Personelin okul bilgisi bulunamadý.");
+            }
+
+        }
+
+        private void SertifikaBilgileriGetirbutton_Click(object sender, EventArgs e)
+        {
+            SertifikalistBox.Items.Clear();
+            // TC kimlik numarasýný alýn (TCtextBox'ten)
+            string tcNo = TCtextBox.Text;
+
+            // Personel hizmetini kullanarak ilgili personeli bulun
+            IEnumerable<Personel> personeller = personelService.GetAll().Where(p => p.TcNo == tcNo);
+
+            var SertifikaBilgileri = from Personel in personelService.GetAll()
+                                     join egitim in egitimBilgisiService.GetAll() on Personel.Id equals egitim.PersonelId
+                                     join sertifika in SertifikaService.GetAll() on egitim.Id equals sertifika.EgitimBilgisiId
+                                     where Personel.TcNo == tcNo
+                                     select new
+                                     {
+                                         SertifikaId = sertifika.Id,
+                                         Kurumadi = sertifika.AlinanKurum,
+                                         SetifikaAdi = sertifika.SertifikaAdi,
+                                         Btarihi = sertifika.SertifikaTarihi,
+                                     };
+
+
+            if (SertifikaBilgileri.Any())
+            {
+                OkullistBox.Items.Clear(); // ListBox'ý temizleyin
+
+                foreach (var sertifika in SertifikaBilgileri)
+                {
+                    string OkulBilgisi = $" {sertifika.SertifikaId}  - {sertifika.Kurumadi}   - {sertifika.Btarihi.ToShortDateString()} - {sertifika.SetifikaAdi}";
+                    SertifikalistBox.Items.Add(OkulBilgisi);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Personelin okul bilgisi bulunamadý.");
+            }
+
+        }
+
+        private void BilgileriGörüntülebtn_Click(object sender, EventArgs e)
+        {
+            string tcNo = TCGiristextBox11.Text;
+            IEnumerable<Personel> personeller = personelService.GetAll().Where(p => p.TcNo == tcNo);
+
+            var ozlukBilgileri = from Personel in personelService.GetAll()
+                                 join ozluk in ozlukBilgisiService.GetAll()
+                                 on Personel.Id equals ozluk.PersonelId
+                                 where Personel.TcNo == tcNo
+                                 select new
+                                 {
+                                     ÝkamettextBox = ozluk.IkametAdresi
+                                 };
+            var maasBilgileri = from Personel in personelService.GetAll()
+                                join maas in maasBilgisiService.GetAll()
+                                on Personel.Id equals maas.PersonelId
+                                where Personel.TcNo == tcNo
+                                select new
+                                {
+                                    MaastextBox = maas.MaasMiktar,
+                                    MaascomboBox = maas.OdemeTarihi.ToString(),
+                                };
+
+            var personel1 = personelService.GetAll().FirstOrDefault(p => p.TcNo == tcNo);
+            if (personeller.Any())
+            {
+                Personel personel = personeller.FirstOrDefault(); // Ýlk kiþiyi alýyoruz, gerekirse uygun kiþiyi seçmelisiniz
+
+                AdtextBox.Text = personel.Ad;
+                SoyadtextBox.Text = personel.Soyad;
+                AnnetextBox.Text = personel.Anne;
+                BabatextBox.Text = personel.Baba;
+                TCtextBox.Text = personel.TcNo;
+                DepartmantextBox.Text = personel.Departman;
+                DogumTarihidateTimePicker1.Value = personel.DogumTarihi;
+                MedeniDtextBox.Text = personel.MedeniDurumu;
+                DogumYtextBox.Text = personel.DogumYeri;
+                RoltextBox.Text = personel.Rol;
+                SehirtextBox.Text = personel.YasadigiSehir;
+                IseGirisTarihidateTimePicker.Text = personel.BaslangicTarihi.ToString();
+                Personelpanel1.BringToFront();
+                Personelpanel1.Visible = true;
+            }
+            else
+            {
+                MessageBox.Show("Personel bulunamadý. Solda bulunan  (Personel) butonundan ekleme yapabilirsiniz tekrardan (Bakýlacak T.C) butonu ile sorgu çekebilirsiniz.");
+            }
+            if (ozlukBilgileri.Any())
+            {
+                foreach (var ozluk in ozlukBilgileri)
+                {
+                    string ozlukBilgisi = ozluk.ÝkamettextBox;
+                    ÝkamettextBox.Text = ozlukBilgisi;
+                }
+
+            }
+            else
+            {
+
+            }
+            if (maasBilgileri.Any())
+            {
+                foreach (var maas in maasBilgileri)
+                {
+                    string maasTarih = maas.MaascomboBox.ToString();
+                    string maasBilgi = maas.MaastextBox.ToString();
+                    MaastextBox.Text = maasBilgi;
+                    OdemeTarihitextBox.Text = maasTarih;
+
+                }
+            }
+            else
+            {
+
+            }
+
+        }
+        private void Personelbutton_Click(object sender, EventArgs e)
+        {
+            Personelpanel1.BringToFront();
+            Personelpanel1.Visible = true;
+        }
+
+        private void Ozlukbutton_Click(object sender, EventArgs e)
+        {
+            Ozlukpanel.BringToFront();
+            Ozlukpanel.Visible = true;
+        }
+
+        private void okulbutton_Click(object sender, EventArgs e)
+        {
+            Okulpanel.BringToFront();
+            Okulpanel.Visible = true;
+        }
+
+        private void Maasbutton_Click(object sender, EventArgs e)
+        {
+            Maaspanel.BringToFront();
+            Maaspanel.Visible = true;
+        }
+
+        private void Ýzinbutton_Click(object sender, EventArgs e)
+        {
+            Ýzinpanel.BringToFront();
+            Ýzinpanel.Visible = true;
+        }
+
+        private void SirketEgitimbutton_Click(object sender, EventArgs e)
+        {
+            SirketIciEgitimpanel.BringToFront();
+            SirketIciEgitimpanel.Visible = true;
+        }
+
+        private void Sertifikabutton_Click(object sender, EventArgs e)
+        {
+            Sertifikapanel.BringToFront();
+            Sertifikapanel.Visible = true;
+        }
+
+        private void TCGetirbutton_Click(object sender, EventArgs e)
+        {
+            bilgilerigetirpnl.BringToFront();
+            bilgilerigetirpnl.Visible = true;
+        }
     }
 }
+
+

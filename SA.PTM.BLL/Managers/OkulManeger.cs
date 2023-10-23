@@ -16,6 +16,16 @@ namespace SA.PTM.BLL.Managers
         {
             _repository = repository;
         }
+
+        public int okulId(int okulId)
+        {
+            var okulIdd = _repository.GetAll().FirstOrDefault(p => p.Id == okulId);
+            if (okulIdd != null)
+            {
+                return okulIdd.Id;
+            }
+            return -1;
+        }
     }
     
 }

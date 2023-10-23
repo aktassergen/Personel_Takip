@@ -15,5 +15,14 @@ namespace SA.PTM.DAL.Concrete
         {
             _repository = repository;
         }
+
+        public bool AvansVer(decimal maas,string tcNo, decimal verilenAvans,int odemeVadesi)
+        {
+            if (verilenAvans <= (2 * maas) && odemeVadesi <= 12)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

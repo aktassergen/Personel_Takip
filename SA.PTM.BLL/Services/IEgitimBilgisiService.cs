@@ -9,5 +9,6 @@ namespace SA.PTM.BLL.Services
 {
     public interface IEgitimBilgisiService:IService<EgitimBilgisi>
     {
+        public int EgitimIdId(int personelId);
     }
 }
