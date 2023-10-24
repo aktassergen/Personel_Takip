@@ -13,5 +13,6 @@ namespace SA.PTM.BLL.Services
         public int UserLogin(string email, string password);
         public Yonetici GetUserByEmail(string email);
         public bool IsPasswordValid(Yonetici user, string password);
+        public int KullaniciId(string kullaniciMail, string kullaniciSifre);
     }
 }

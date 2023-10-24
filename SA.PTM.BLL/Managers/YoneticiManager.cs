@@ -2,6 +2,7 @@
 using SA.PTM.BLL.Services;
 using SA.PTM.DAL.Abstract;
 using SA.PTM.DAL.Concrete;
+using SA.PTM.DAL.Context;
 using SA.PTM.Entity.Concrete;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,27 @@ namespace SA.PTM.BLL.Managers
             _repository = repository;
             _yoneticiDbSet = _repository._dbSet;
         }
+
+        public int KullaniciId(string kullaniciMail, string kullaniciSifre)
+        {
+            try
+            {
+                var user = _repository.GetAll().FirstOrDefault(u => u.KullaniciMail == kullaniciMail && u.KullaniciSifre == kullaniciSifre);
+
+                if (user != null)
+                {
+                    return user.Id;
+                }
+            }
+            catch (Exception ex)
+            {
+               
+
+            }
+
+            return -1;
+        }
+
 
         public Yonetici PersonelGiris(string mail)
         {

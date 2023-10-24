@@ -39,7 +39,14 @@ namespace SA.PTM.UI
             button12.Visible = false;
             button13.Visible = false;
             button14.Visible = false;
-
+            Personelbutton.Visible = false;
+            Ozlukbutton.Visible = false;
+            okulbutton.Visible = false;
+            Maasbutton.Visible = false;
+            Ýzinbutton.Visible = false;
+            SirketEgitimbutton.Visible = false;
+            Sertifikabutton.Visible = false;
+            TCGetirbutton.Visible = false;
         }
 
         private void PersonelEklebutton_Click(object sender, EventArgs e)
@@ -48,7 +55,7 @@ namespace SA.PTM.UI
 
             string kullaniciMail = KullaniciAdiTextBox.Text;
             string kullaniciSifre = SifreTextBox.Text;
-            int yoneticiId = KullaniciId(kullaniciMail, kullaniciSifre);
+            int yoneticiId = yoneticiService.KullaniciId(kullaniciMail, kullaniciSifre);
             DateTime dogumTarihi = DogumTarihidateTimePicker1.Value;
             string tcNo = TCtextBox.Text;
             bool tcNoBenzersiz = IsTcNoUnique(tcNo);
@@ -168,12 +175,12 @@ namespace SA.PTM.UI
             if (personelId != -1)
             {
                 // Kiþiye ait özlük bilgilerini al
-                OzlukBilgisi ozlukBilgisi = ozlukBilgisiService.GetAll().FirstOrDefault(p => p.PersonelId == personelId);
+                OzlukBilgisi? ozlukBilgisi = ozlukBilgisiService.GetAll().FirstOrDefault(p => p.PersonelId == personelId);
 
                 if (ozlukBilgisi != null)
                 {
                     // Kiþiye ait mevcut ikametgah bilgisini al
-                    string mevcutIkametAdresi = ozlukBilgisi.IkametAdresi;
+                    string? mevcutIkametAdresi = ozlukBilgisi.IkametAdresi;
 
                     if (string.IsNullOrEmpty(mevcutIkametAdresi))
                     {
@@ -220,7 +227,7 @@ namespace SA.PTM.UI
             if (personelId != -1)
             {
                 // Kiþiye ait özlük bilgilerini al
-                OzlukBilgisi ozlukBilgisi = ozlukBilgisiService.GetAll().FirstOrDefault(p => p.PersonelId == personelId);
+                OzlukBilgisi? ozlukBilgisi = ozlukBilgisiService.GetAll().FirstOrDefault(p => p.PersonelId == personelId);
 
                 if (ozlukBilgisi != null)
                 {
@@ -339,7 +346,7 @@ namespace SA.PTM.UI
                         odemeTarihi = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 21);
                     }
 
-                    MaasBilgisi eskiMaasBilgisi = maasBilgisiService.GetAll().FirstOrDefault(o => o.PersonelId == personelId);
+                    MaasBilgisi? eskiMaasBilgisi = maasBilgisiService.GetAll().FirstOrDefault(o => o.PersonelId == personelId);
 
                     if (eskiMaasBilgisi != null)
                     {
@@ -379,7 +386,6 @@ namespace SA.PTM.UI
             string kullaniciMail = KullaniciAdiTextBox.Text;
             string kullaniciSifre = SifreTextBox.Text;
 
-            // Yeni bir yönetici oluþturun
             Yonetici yeniYonetici = new Yonetici
             {
                 KullaniciMail = kullaniciMail,
@@ -388,11 +394,8 @@ namespace SA.PTM.UI
 
             try
             {
-                // Yöneticiyi veritabanýna ekleyin
                 yoneticiService.Insert(yeniYonetici);
                 MessageBox.Show("Yönetici eklendi.");
-
-                // Ekledikten sonra gerekli iþlemleri yapabilirsiniz
             }
             catch (Exception ex)
             {
@@ -405,14 +408,21 @@ namespace SA.PTM.UI
             string kullaniciMail = KullaniciAdiTextBox.Text;
             string kullaniciSifre = SifreTextBox.Text;
 
-            int yoneticiId = KullaniciId(kullaniciMail, kullaniciSifre);
+            int yoneticiId = yoneticiService.KullaniciId(kullaniciMail, kullaniciSifre);
 
             if (yoneticiId != -1)
             {
                 MessageBox.Show("Giriþ baþarýlý. Yönetici ID: " + yoneticiId);
                 GirisPanelpanel.Visible = false;
                 bilgilerigetirpnl.Visible = true;
-
+                Personelbutton.Visible = true;
+                Ozlukbutton.Visible = true;
+                okulbutton.Visible = true;
+                Maasbutton.Visible = true;
+                Ýzinbutton.Visible = true;
+                SirketEgitimbutton.Visible = true;
+                Sertifikabutton.Visible = true;
+                TCGetirbutton.Visible = true;
 
                 // Giriþ yaptýktan sonra yapýlacak iþlemleri burada gerçekleþtirebilirsiniz.
             }
@@ -424,29 +434,7 @@ namespace SA.PTM.UI
 
 
 
-        public int KullaniciId(string kullaniciMail, string kullaniciSifre)
-        {
-            try
-            {
-                using (var dbContext = new PersonelTakipDbContext())
-                {
-                    var user = dbContext.Yoneticiler.FirstOrDefault(u => u.KullaniciMail == kullaniciMail && u.KullaniciSifre == kullaniciSifre);
-
-                    if (user != null)
-                    {
-                        // Kullanýcý doðrulandý
-                        return user.Id;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Giriþ yapýlýrken hata oluþtu: " + ex.Message);
-            }
-
-            // Kullanýcý bulunamadý veya hata meydana geldiði durumda -1 döndürülebilir.
-            return -1;
-        }
+     
 
         private bool IsTcNoUnique(string tcNo)
         {
@@ -460,7 +448,7 @@ namespace SA.PTM.UI
         private void ÝzinEklebutton_Click_1(object sender, EventArgs e)
         {
             string tcNo = TCGiristextBox11.Text;
-            Personel personel = personelService.GetAll().FirstOrDefault(p => p.TcNo == tcNo);
+            Personel? personel = personelService.GetAll().FirstOrDefault(p => p.TcNo == tcNo);
 
             if (personel != null)
             {
@@ -574,7 +562,7 @@ namespace SA.PTM.UI
 
         private void SertifikaGuncellebutton_Click(object sender, EventArgs e)
         {
-            string selectedSertifika = SertifikalistBox.SelectedItem as string;
+            string? selectedSertifika = SertifikalistBox.SelectedItem as string;
             if (selectedSertifika != null)
             {
                 string[] SertifikaBilgileri = selectedSertifika.Split('-');
@@ -615,7 +603,7 @@ namespace SA.PTM.UI
 
         private void SertifikaSilbutton_Click(object sender, EventArgs e)
         {
-            string selectedSertifika = SertifikalistBox.SelectedItem as string;
+            string? selectedSertifika = SertifikalistBox.SelectedItem as string;
             if (selectedSertifika != null)
             {
                 string[] SertifikaBilgileri = selectedSertifika.Split('-');
@@ -688,7 +676,7 @@ namespace SA.PTM.UI
 
         private void SirketIiciEgitimGuncellebutton_Click(object sender, EventArgs e)
         {
-            string selectedEgitim = SirketiciegitimlistBox.SelectedItem as string;
+            string? selectedEgitim = SirketiciegitimlistBox.SelectedItem as string;
             if (selectedEgitim != null)
             {
                 string[] okulBilgileri = selectedEgitim.Split('-');
@@ -731,7 +719,7 @@ namespace SA.PTM.UI
 
         private void SirketIiciEgitimSilbutton_Click(object sender, EventArgs e)
         {
-            string selectedEgitim = SirketiciegitimlistBox.SelectedItem as string;
+            string? selectedEgitim = SirketiciegitimlistBox.SelectedItem as string;
             if (selectedEgitim != null)
             {
                 string[] okulBilgileri = selectedEgitim.Split('-');
@@ -771,7 +759,7 @@ namespace SA.PTM.UI
 
         private void OkulBilgileriSilbutton_Click(object sender, EventArgs e)
         {
-            string selectedOkul = OkullistBox.SelectedItem as string;
+            string? selectedOkul = OkullistBox.SelectedItem as string;
             if (selectedOkul != null)
             {
                 string[] okulBilgileri = selectedOkul.Split(':');
@@ -806,7 +794,7 @@ namespace SA.PTM.UI
 
         private void OkulBilgileriGuncellebutton_Click(object sender, EventArgs e)
         {
-            string selectedOkul = OkullistBox.SelectedItem as string;
+            string? selectedOkul = OkullistBox.SelectedItem as string;
             if (selectedOkul != null)
             {
                 string[] okulBilgileri = selectedOkul.Split(':');
@@ -856,7 +844,7 @@ namespace SA.PTM.UI
 
         private void IzinGuncellebutton_Click(object sender, EventArgs e)
         {
-            string selectedizin = IzinlistBox.SelectedItem as string;
+            string? selectedizin = IzinlistBox.SelectedItem as string;
             if (selectedizin != null)
             {
                 string[] izinBilgileriId = selectedizin.Split('-');
@@ -900,7 +888,7 @@ namespace SA.PTM.UI
 
         private void Izinsilbutton_Click(object sender, EventArgs e)
         {
-            string selectedizin = IzinlistBox.SelectedItem as string;
+            string? selectedizin = IzinlistBox.SelectedItem as string;
             if (selectedizin != null)
             {
                 string[] izinBilgileriId = selectedizin.Split('-');
@@ -1120,7 +1108,7 @@ namespace SA.PTM.UI
             var personel1 = personelService.GetAll().FirstOrDefault(p => p.TcNo == tcNo);
             if (personeller.Any())
             {
-                Personel personel = personeller.FirstOrDefault(); // Ýlk kiþiyi alýyoruz, gerekirse uygun kiþiyi seçmelisiniz
+                Personel? personel = personeller.FirstOrDefault(); // Ýlk kiþiyi alýyoruz, gerekirse uygun kiþiyi seçmelisiniz
 
                 AdtextBox.Text = personel.Ad;
                 SoyadtextBox.Text = personel.Soyad;
